@@ -3,9 +3,10 @@
 - \<FMOD_VERSION\>/
     - include/
     - lib/
-        - platform X/
-        - platform Y/
-        - platform Z/
+        - platform1-arch1/
+        - platform1-arch2/
+        - platform2-arch1/
+        - .../
 
 ## Example
 

@@ -1,6 +1,6 @@
 # FMOD CMake
 
-Adds a CMake interface library for linking to FMOD Studio and Core APIs on multiple platforms for C/C++ projects.
+A CMake interface for linking to FMOD Studio and Core APIs on multiple platforms for C/C++ projects.
 
 Since the FMOD API is proprietary, its distribution is limited to downloads from
 the FMOD website. To abide by the copyright, this project only defines a
@@ -92,7 +92,7 @@ target_link_libraries(my_exe PRIVATE fmod)
 
 ### Contributing
 
-Please submit an issue for suggestions, requests or bug reports, and submit a pull request if you want to merge support for any of the following:
+Please submit an issue for suggestions, requests or bug reports. Pull requests are welcome, especially for the following:
 
 - Support for other platforms (Linux, Mobile, Consoles, etc.)
 - Added robustness to CMake files fixing bugs and covering edge cases, etc.
