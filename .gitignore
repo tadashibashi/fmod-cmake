@@ -1,0 +1,27 @@
+
+# Ignore library files
+*.a
+*.dylib
+*.dll
+*.jar
+*.lib
+*.so
+
+# Ignore include files
+fmod/**/*.cs
+fmod/**/*.h
+fmod/**/*.hpp
+
+# Temporary IDE files
+.cache/
+.idea/
+.vscode/
+.vs/
+
+# Build folders
+build/
+cmake-build*/
+out/
+
+# OS files
+.DS_Store
