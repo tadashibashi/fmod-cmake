@@ -27,10 +27,18 @@
             - libfmodL.dylib
             - libfmodstudio.dylib
             - libfmodstudioL.dylib
-        - linux-arm/ (todo)
+        - windows-arm64/
+            - fmod_vc.lib
+            - fmodL_vc.lib
+            - fmodstudio_vc.lib
+            - fmodstudioL_vc.lib
+            - fmod.dll (optional, see root README.md)
+            - fmodL.dll (optional)
+            - fmodstudio.dll (optional)
+            - fmodstudioL.dll (optional)  
+        - windows-x86/ (same as above)
+        - windows-x86_64/ (same as above)
+        - linux-arm/ (todo, not tested yet)
         - linux-arm64/
         - linux-x86/
         - linux-x86_64/
-        - windows-arm64/
-        - windows-x86/
-        - windows-x86_64/
