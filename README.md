@@ -7,7 +7,8 @@ the FMOD website. To abide by the copyright, this project only defines a
 folder structure into which you can copy/move these files and does not contain the actual files themselves.
 
 Currently tested and working on
-- MacOS arm64 / x86_64
+- MacOS arm64
+- Windows arm64
 - Emscripten WASM
 
 ### How to use
@@ -22,19 +23,18 @@ Then extract and install the files on your computer.
 
 *Note:* you will need to make an account with FMOD to access the downloads page. If using FMOD commercially, please check your use case and licensing tier.
 
-#### 3. Copy FMOD Headers
+#### 3. Copy FMOD headers
 
-All FMOD Studio API downloads include the C/C++ header files.
+Find the C/C++ header files in one of your downloads/installations, usually located at `api/core/inc` and `api/studio/inc` for both Core and Studio APIs, respectively.
 
-Find the headers in one of the downloads, usually located at `api/core/inc` and `api/studio/inc` for both Core and Studio APIs, respectively.
+Copy all `.h` and `.hpp` from here into this repository's `fmod/<version>/include` folder. Any other file types like `.cs` are not necessary.
+For the path to copy the files, let's say your version of FMOD is `2.02.21` - the headers should then go into `fmod/2.02.21/include`.
 
-Copy all `.h` and `.hpp` into this repository's `fmod/<version-number>/include` folder. For example, if your version of FMOD is 2.02.21, the headers should go into `fmod/2.02.21/include`. Any other file types like `.cs` are not necessary.
+*Note:* by specifying numbered folders, we can support multiple versions, and easily upgrade/downgrade on demand by changing the `FMOD_VERSION` cmake variable as seen in step 5.
 
-*Note:* using version number folders, you may support multiple FMOD versions and easily choose which to target by setting the `FMOD_VERSION` variable, as you will soon see in step 5.
+#### 4. Copy FMOD libraries for each platform
 
-#### 4. Copy FMOD library files for each platform
-
-##### Mac OS (both x86_64 and arm64)
+##### Mac OS AppleClang (x86_64, arm64)
 
 Library file locations (from download)
 - Core:   `api/core/lib`
@@ -45,8 +45,31 @@ Library file locations (from download)
     - libfmodstudio.dylib
     - libfmodstudioL.dylib
 
-In this repo, copy these files to:
+Destination folder (in this repo):
     `fmod/<version>/lib/macos`
+e.g. with FMOD v2.02.21, it would be `fmod/2.02.21/macos`
+
+
+##### Windows MSVC (x86, x64, arm64)
+Library file locations (from download)
+- Core:   `api/core/lib/<arch>`
+    - fmod_vc.lib
+    - fmodL_vc.lib
+    - fmod.dll
+    - fmodL.dll
+
+- Studio: `api/studio/lib/<arch>`
+    - fmodstudio_vc.lib
+    - fmodstudioL_vc.lib
+    - fmodstudio.dll
+    - fmodstudioL.dll
+
+Destination folder (in this repo):
+    `fmod/<version>/windows-<arch>/lib`
+e.g. on x64 FMOD v2.02.21, it would be `fmod/2.02.21/windows-x64/lib`
+
+*Platform note:*
+The dll files are optional to include in the repo folder. If you do include it, you can call `fmod_copy_libs(TARGET_NAME)` inside the CMakeLists file containing your `add_executable` declaration, and it will automatically copy the dlls to the same directory as your built binary. Otherwise, you may omit these files from this repo, and drop them into the binary directory manually.
 
 ##### HTML5
 
@@ -59,10 +82,10 @@ Library file locations (from download)
     - fmodstudio_wasm.a
     - fmodstudioL_wasm.a
 
-In this repo, copy these files to:
+Destination folder (in this repo):
     `fmod/<version>/lib/html5-w32`
 
-*Platform Note:*
+*Platform note:*
 The best way to set up Emscripten builds in CMake is by passing `-DCMAKE_TOOLCHAIN_FILE=<path/to/Emscripten.cmake>` during the CMake generation step. This flag's value should contain the actual path to the `Emscripten.cmake` toolchain file located in an Emscripten installation on your system. It's usually located in `<emsdk-root>/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake`
 
 ##### More platforms to come...
@@ -88,7 +111,10 @@ add_executable(my_exe main.cpp)
 target_link_libraries(my_exe PRIVATE fmod)
 ```
 
-*Note:* You may bypass auto-platform-detection by explicitly setting the platform lib sub-folder via `set(FMOD_PLATFORM "macos" CACHE STRING "" FORCE)`
+*Notes:*
+- You may bypass auto-platform-detection by explicitly setting the platform lib sub-folder via `set(FMOD_PLATFORM "macos" CACHE STRING "" FORCE)`
+- For HTML5 builds, if you set `FMOD_HTML5_REDUCED` to `ON` the interface will search for `fmod_reduced_wasm.a`, and `fmodstudio_wasm.a`, which both contain reduced features. Please check the HTML5-specific platform information in the FMOD docs for more info. `fmodstudioL_wasm.a` is the only non-reduced studio build, so this is the file the interface will search for when `FMOD_HTML5_REDUCED` is falsy.
+
 
 ### Contributing
 
