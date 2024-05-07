@@ -6,6 +6,7 @@
 *.jar
 *.lib
 *.so
+*.so.*
 
 # Ignore include files
 fmod/**/*.cs

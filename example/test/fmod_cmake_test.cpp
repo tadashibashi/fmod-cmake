@@ -3,6 +3,7 @@
 
 #include <SDL.h>
 
+#include <cstring>
 #include <functional>
 #include <iostream>
 #include <thread>

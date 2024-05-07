@@ -52,7 +52,7 @@ endmacro()
 # @param PLATFORM_VAR [out] name of the variable to receive the detected platform name.
 macro(fmod_detect_platform PLATFORM_VAR)
     # FIXME: this regex can be simplified a lot, it's 'just adapted from a StackOverflow post that "works"
-    set(X86_64_REGEX "(x86)|(X86)|(amd64)|(AMD64)|(x86_64)|(X86_64)|(x86-64)|(X86-64)|(x64)|(X64)")
+    set(X86_64_REGEX "(x86)|(X86)|(amd64)|(AMD64)|(x86_64)|(X86_64)|(x64)|(X64)")
 
 	if (IOS)
         message(WARNING "fmod-cmake: iOS platform has not been tested yet")
@@ -75,7 +75,7 @@ macro(fmod_detect_platform PLATFORM_VAR)
         else()
             message(FATAL_ERROR "fmod-cmake: Windows with architecture ${CMAKE_SYSTEM_PROCESSOR} is not supported")
         endif()
-    elseif(LINUX)
+    elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
         message(WARNING "Linux is not tested and supported yet")
 
         if (CMAKE_SYSTEM_PROCESSOR MATCHES ${X86_64_REGEX})
@@ -85,7 +85,7 @@ macro(fmod_detect_platform PLATFORM_VAR)
                 set (${PLATFORM_VAR} linux-x86_64)
             endif()
 
-        elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "(ARM)|(arm)")
+        elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "(ARM)|(arm)|(aarch)|(AARCH)")
             if (CMAKE_SIZEOF_VOID_P EQUAL 4)
                 set (${PLATFORM_VAR} linux-arm)
             else()
@@ -145,9 +145,9 @@ macro(fmod_find_libs _PLATFORM_NAME _VERSION _FMOD_LIBS _FMOD_STUDIO_LIBS _FMOD_
             ${FMOD_LIB_ROOT}/fmod${FMOD_LIB_TYPE}.dll
             ${FMOD_LIB_ROOT}/fmodstudio${FMOD_LIB_TYPE}.dll
         )
-    elseif(LINUX)
-        set(${_FMOD_LIBS}        ${FMOD_LIB_ROOT}/fmod${FMOD_LIB_TYPE}.so)
-        set(${_FMOD_STUDIO_LIBS} ${FMOD_LIB_ROOT}/fmodstudio${FMOD_LIB_TYPE}.so)
+    elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
+        set(${_FMOD_LIBS}        ${FMOD_LIB_ROOT}/libfmod${FMOD_LIB_TYPE}.so)
+        set(${_FMOD_STUDIO_LIBS} ${FMOD_LIB_ROOT}/libfmodstudio${FMOD_LIB_TYPE}.so)
     elseif(ANDROID)
         set(${_FMOD_LIBS}        ${FMOD_LIB_ROOT}/fmod${FMOD_LIB_TYPE}.so)
         set(${_FMOD_STUDIO_LIBS} ${FMOD_LIB_ROOT}/fmodstudio${FMOD_LIB_TYPE}.so)
