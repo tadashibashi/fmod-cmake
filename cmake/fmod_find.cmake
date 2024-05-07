@@ -1,11 +1,60 @@
-# Sets the PLATFORM_VAR variable, which is the subdirectory of lib where the FMOD libs are located
-# for the detected platform.
+# Get the iOS platform. Please only call this when IOS is set to TRUE, otherwise a cmake error will be emitted
+# @param _PLATFORM  [out] name of variable to receive iOS sub-platform (STRING)
+# @param _SIMULATOR [out] name of variable to receive whether the platform is a simulator (BOOL)
+macro(fmod_detect_ios_platform _PLATFORM _SIMULATOR)
+    if (NOT IOS) # just in case someone tries to call this without being ios
+        message(FATAL_ERROR "fmod-cmake: cannot call fmod_detect_ios_platform when not an iOS platform")
+    endif()
+
+    string(TOUPPER "${CMAKE_OSX_SYSROOT}" IOS_SYSROOT)
+    if (IOS_SYSROOT MATCHES "PLATFORMS/APPLETV")
+        set(${_PLATFORM} appletvos)
+    elseif(IOS_SYSROOT MATCHES "PLATFORMS/IPHONE")
+        set(${_PLATFORM} iphone)
+    elseif(IOS_SYSROOT MATCHES "PLATFORMS/XR")
+        set(${_PLATFORM} xr)
+    else()
+        message(FATAL_ERROR "fmod-cmake: iOS platform at sysroot ${CMAKE_OSX_SYSROOT} is unsupported and/or unrecognized")
+    endif()
+
+    # Check if simulator
+    if (IOS_SYSROOT MATCHES "SIMULATOR.PLATFORM")
+        set(${_SIMULATOR} TRUE)
+    else()
+        set(${_SIMULATOR} FALSE)
+    endif()
+endmacro()
+
+macro(fmod_detect_android_platform _PLATFORM)
+    if (NOT ANDROID)
+        message(FATAL_ERROR "fmod-cmake: cannot call fmod_detect_android_platform when not an Android platform")
+    endif()
+
+    string(TOUPPER "${CMAKE_ANDROID_ARCH_ABI}" ANDROID_ARCH)
+    if (ANDROID_ARCH STREQUAL "ARM64-V8A")
+        set(${_PLATFORM} "arm64-v8a")
+    elseif(ANDROID_ARCH STREQUAL "ARMEABI-V7A")
+        set(${_PLATFORM} "armeabi-v7a")
+    elseif(ANDROID_ARCH STREQUAL "X86")
+        set(${_PLATFORM} "x86")
+    elseif(ANDROID_ARCH STREQUAL "X86_64")
+        set(${_PLATFORM} "x86_64")
+    else()
+        message(FATAL_ERROR "fmod-cmake: Android platform ${CMAKE_ANDROID_ARCH_ABI} is unsupported and/or unrecognized")
+    endif()
+endmacro()
+
+# Sets detected platform folder name into a provided var name.
+# Emits a warning if current platform has not been tested yet.
+# Emits an error if platform is unsupported by us or not provided by FMOD.
+# @param PLATFORM_VAR [out] name of the variable to receive the detected platform name.
 macro(fmod_detect_platform PLATFORM_VAR)
     # FIXME: this regex can be simplified a lot, it's 'just adapted from a StackOverflow post that "works"
     set(X86_64_REGEX "(x86)|(X86)|(amd64)|(AMD64)|(x86_64)|(X86_64)|(x86-64)|(X86-64)|(x64)|(X64)")
 
 	if (IOS)
-		message(FATAL_ERROR "fmod-cmake error: ios platform not supported yet")
+        message(WARNING "fmod-cmake: iOS platform has not been tested yet")
+		set(${PLATFORM_VAR} "ios")
 	elseif(APPLE)
 		set(${PLATFORM_VAR} "macos")
 	elseif(WIN32)
@@ -22,7 +71,7 @@ macro(fmod_detect_platform PLATFORM_VAR)
         elseif(CMAKE_SYSTEM_PROCESSOR MATCHES "(arm)|(ARM)" AND CMAKE_SIZEOF_VOID_P EQUAL 8)
             set (${PLATFORM_VAR} windows-arm64)
         else()
-            message(FATAL_ERROR "Windows with architecture ${CMAKE_SYSTEM_PROCESSOR} is not supported")
+            message(FATAL_ERROR "fmod-cmake: Windows with architecture ${CMAKE_SYSTEM_PROCESSOR} is not supported")
         endif()
     elseif(LINUX)
         message(WARNING "Linux is not tested and supported yet")
@@ -36,9 +85,9 @@ macro(fmod_detect_platform PLATFORM_VAR)
 
         elseif (CMAKE_SYSTEM_PROCESSOR MATCHES "(ARM)|(arm)")
             if (CMAKE_SIZEOF_VOID_P EQUAL 4)
-                set (FMOD_PLATFORM linux-arm)
+                set (${PLATFORM_VAR} linux-arm)
             else()
-                set (FMOD_PLATFORM linux-arm64)
+                set (${PLATFORM_VAR} linux-arm64)
             endif()
         else()
             message(FATAL_ERROR
@@ -46,9 +95,11 @@ macro(fmod_detect_platform PLATFORM_VAR)
         endif()
 
     elseif(ANDROID)
-        message(FATAL_ERROR "fmod-cmake: Android not supported yet")
+        message(WARNING "fmod-cmake: Android platform has not been tested yet")
+        fmod_detect_android_platform(ANDROID_ARCH)
+        set(${PLATFORM_VAR} android-${ANDROID_ARCH})
     elseif(EMSCRIPTEN)
-        set (FMOD_PLATFORM html5-w32)
+        set (${PLATFORM_VAR} html5-w32)
     endif()
 endmacro()
 
@@ -67,30 +118,37 @@ macro(fmod_find_libs _PLATFORM_NAME _VERSION _FMOD_LIBS _FMOD_STUDIO_LIBS _FMOD_
     # On debug builds, link to the FMOD logging libraries
     string(TOUPPER "${CMAKE_BUILD_TYPE}" BUILD_TYPE_UPPER)
     if (BUILD_TYPE_UPPER MATCHES "DEBUG" OR BUILD_TYPE_UPPER MATCHES "RELWITHDEBINFO")
-        set(FMOD_LIB_TYPE "L")
+        set(FMOD_LIB_TYPE "L") # FMOD logging libraries append an 'L' at the end of the name
     else()
         set(FMOD_LIB_TYPE "")
     endif()
-    
+
     # Get the library files per platform
     if (IOS)
-        # TODO: implement this
-        message(FATAL_ERROR "fmod-cmake ios platform not implemented yet")
+        fmod_detect_ios_platform(IOS_PLATFORM IOS_SIMULATOR)
+        if (IOS_SIMULATOR)
+            set(${_FMOD_LIBS}        ${FMOD_LIB_ROOT}/libfmod${FMOD_LIB_TYPE}_${IOS_PLATFORM}simulator.a)
+            set(${_FMOD_STUDIO_LIBS} ${FMOD_LIB_ROOT}/libfmodstudio${FMOD_LIB_TYPE}_${IOS_PLATFORM}simulator.a)
+        else()
+            set(${_FMOD_LIBS}        ${FMOD_LIB_ROOT}/libfmod${FMOD_LIB_TYPE}_${IOS_PLATFORM}os.a)
+            set(${_FMOD_STUDIO_LIBS} ${FMOD_LIB_ROOT}/libfmodstudio${FMOD_LIB_TYPE}_${IOS_PLATFORM}os.a)
+        endif()
     elseif(APPLE)
         set(${_FMOD_LIBS}        ${FMOD_LIB_ROOT}/libfmod${FMOD_LIB_TYPE}.dylib)
         set(${_FMOD_STUDIO_LIBS} ${FMOD_LIB_ROOT}/libfmodstudio${FMOD_LIB_TYPE}.dylib)
     elseif(WIN32)
         set(${_FMOD_LIBS}        ${FMOD_LIB_ROOT}/fmod${FMOD_LIB_TYPE}_vc.lib)
         set(${_FMOD_STUDIO_LIBS} ${FMOD_LIB_ROOT}/fmodstudio${FMOD_LIB_TYPE}_vc.lib)
-        set(${_FMOD_DLLS} 
+        set(${_FMOD_DLLS}                                # set the dlls var, since we're on windows
             ${FMOD_LIB_ROOT}/fmod${FMOD_LIB_TYPE}.dll
             ${FMOD_LIB_ROOT}/fmodstudio${FMOD_LIB_TYPE}.dll
         )
     elseif(LINUX)
-        # TODO: implement this
-        message(FATAL_ERROR "fmod-cmake: Linux platform is not tested and supported yet")
+        set(${_FMOD_LIBS}        ${FMOD_LIB_ROOT}/fmod${FMOD_LIB_TYPE}.so)
+        set(${_FMOD_STUDIO_LIBS} ${FMOD_LIB_ROOT}/fmodstudio${FMOD_LIB_TYPE}.so)
     elseif(ANDROID)
-        message(FATAL_ERROR "fmod-cmake: Android platform detection not implemented yet")
+        set(${_FMOD_LIBS}        ${FMOD_LIB_ROOT}/fmod${FMOD_LIB_TYPE}.so)
+        set(${_FMOD_STUDIO_LIBS} ${FMOD_LIB_ROOT}/fmodstudio${FMOD_LIB_TYPE}.so)
     elseif(EMSCRIPTEN)
         set(${_FMOD_LIBS}        ${FMOD_LIB_ROOT}/fmod${FMOD_LIB_TYPE}_wasm.a)
         set(${_FMOD_STUDIO_LIBS} ${FMOD_LIB_ROOT}/fmodstudio${FMOD_LIB_TYPE}_wasm.a)
