@@ -2,9 +2,11 @@
 
 A CMake interface for linking to FMOD Studio and Core APIs on multiple platforms for C/C++ projects.
 
-Since the FMOD API is proprietary, its distribution is limited to downloads from
-the FMOD website. To abide by the copyright, this project only defines a
+Since FMOD is proprietary, distribution is limited to downloads directly from
+fmod.com. In accordance with their copyright, this project only defines a
 folder structure into which you can copy/move these files and does not contain the actual files themselves.
+
+If forking this repo, please make any uploads of the FMOD libs and headers private. In order to add library files and headers to git, you'll need to comment out or delete the corresponding ignore patterns in `.gitignore`
 
 Currently tested and working on
 - MacOS arm64
@@ -17,20 +19,19 @@ Currently tested and working on
 
 #### 2. Get FMOD
 
-Determine which FMOD API platforms and version you need, and download each from fmod.com.
+- Download the FMOD API platforms and version you need from fmod.com
+- Extract and install the files
 
-Then extract and install the files on your computer.
-
-*Note:* you will need to make an account with FMOD to access the downloads page. If using FMOD commercially, please check your use case and licensing tier.
+*Note:* You will need an FMOD account to access the downloads page. If you are planning on using FMOD commercially, you will need to follow their licensing structure and terms.
 
 #### 3. Copy FMOD headers
 
-Find the C/C++ header files in one of your downloads/installations, usually located at `api/core/inc` and `api/studio/inc` for both Core and Studio APIs, respectively.
+Find the C/C++ header files in one of your download folders or installations, usually located at `<fmod-api-root>/api/core/inc` and `<fmod-api-root>/api/studio/inc` for both Core and Studio APIs, respectively.
 
-Copy all `.h` and `.hpp` from here into this repository's `fmod/<version>/include` folder. Any other file types like `.cs` are not necessary.
-For the path to copy the files, let's say your version of FMOD is `2.02.21` - the headers should then go into `fmod/2.02.21/include`.
+Copy all `.h` and `.hpp` from here into this repository's `<this-repo>/fmod/<version>/include` folder. Any other file types like `.cs` are not necessary.
+For the path to copy the files, let's say your version of FMOD is `2.02.21` - the headers should then go into `<this-repo>/fmod/2.02.21/include`.
 
-*Note:* by specifying numbered folders, we can support multiple versions, and easily upgrade/downgrade on demand by changing the `FMOD_VERSION` cmake variable as seen in step 5.
+*Note:* by specifying version folders, switching between multiple versions is supported by changing the `FMOD_VERSION` cmake variable as seen in step 5.
 
 #### 4. Copy FMOD libraries for each platform
 
@@ -86,7 +87,9 @@ Destination folder (in this repo):
     `fmod/<version>/lib/html5-w32`
 
 *Platform note:*
-The best way to set up Emscripten builds in CMake is by passing `-DCMAKE_TOOLCHAIN_FILE=<path/to/Emscripten.cmake>` during the CMake generation step. This flag's value should contain the actual path to the `Emscripten.cmake` toolchain file located in an Emscripten installation on your system. It's usually located in `<emsdk-root>/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake`
+The easiest and most reliable way to set up Emscripten builds in CMake is by passing the toolchain file to the CMake command line. e.g. `cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=<path/to/Emscripten.cmake>`
+
+Assuming you've already installed emsdk and the latest version of Emscripten, this file is usually located at `<emsdk-root>/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake`
 
 ##### More platforms to come...
 
