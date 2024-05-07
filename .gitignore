@@ -17,6 +17,7 @@ fmod/**/*.hpp
 .idea/
 .vscode/
 .vs/
+CMakeSettings.json
 
 # Build folders
 build/
