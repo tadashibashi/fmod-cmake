@@ -6,7 +6,8 @@ Since FMOD is proprietary, distribution is limited to downloads directly from
 fmod.com. In accordance with their copyright, this project only defines a
 folder structure into which you can copy/move these files and does not contain the actual files themselves.
 
-If forking this repo, please make any uploads of the FMOD libs and headers private. In order to add library files and headers to git, you'll need to comment out or delete the corresponding ignore patterns in `.gitignore`
+If forking this repo, please make any uploads of the FMOD libs and headers private.
+In order to add library files and headers to git, you'll need to comment out or delete the corresponding ignore patterns in `.gitignore`
 
 Currently tested and working on
 - MacOS arm64
