@@ -76,7 +76,6 @@ macro(fmod_detect_platform PLATFORM_VAR)
             message(FATAL_ERROR "fmod-cmake: Windows with architecture ${CMAKE_SYSTEM_PROCESSOR} is not supported")
         endif()
     elseif(CMAKE_SYSTEM_NAME MATCHES "Linux")
-        message(WARNING "Linux is not tested and supported yet")
 
         if (CMAKE_SYSTEM_PROCESSOR MATCHES ${X86_64_REGEX})
             if (CMAKE_SIZEOF_VOID_P EQUAL 4)
