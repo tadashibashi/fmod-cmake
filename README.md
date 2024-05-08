@@ -10,6 +10,7 @@ If forking this repo, please make any uploads of the FMOD libs and headers priva
 
 Currently tested and working on
 - MacOS arm64
+- Linux Ubuntu aarch64
 - Windows arm64
 - Emscripten WASM
 
