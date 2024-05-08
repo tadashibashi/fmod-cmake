@@ -3,13 +3,13 @@
 A CMake interface for linking to FMOD Studio and Core APIs on multiple platforms for C/C++ projects.
 
 Since FMOD is proprietary, distribution is limited to downloads directly from
-fmod.com. In accordance with their copyright, this project only defines a
+fmod.com. In compliance with their copyright, this project only defines a
 folder structure into which you can copy/move these files and does not contain the actual files themselves.
 
 If forking this repo, please make any uploads of the FMOD libs and headers private.
 In order to add library files and headers to git, you'll need to comment out or delete the corresponding ignore patterns in `.gitignore`
 
-Currently tested and working on
+This interface is tested and working on
 - MacOS arm64
 - Linux Ubuntu aarch64
 - Windows arm64
@@ -53,7 +53,29 @@ Destination folder (in this repo):
 e.g. with FMOD v2.02.21, it would be `fmod/2.02.21/lib/macos`
 
 
+##### Linux (x86, x86_64, arm, arm64)
+
+Library file locations (from download)
+- Core:   `api/core/lib/<arch>`
+    - libfmod.so.\*.\*
+    - libfmod.so (symlink)
+    - libfmodL.so.\*.\*
+    - libfmodL.so (symlink)
+
+- Studio: `api/studio/lib/<arch>`
+    - libfmodstudio.so.\*.\*
+    - libfmodstudio.so (symlink)
+    - libfmodstudioL.so.\*.\*
+    - libfmodstudioL.so (symlink)
+
+Destination folder (in this repo):
+    `fmod/<version>/lib/linux-<arch>`
+
+*Platform note:*
+Please make sure to include the symlinks with the plain `.so` extension in addition to the actual lib files.
+
 ##### Windows MSVC (x86, x64, arm64)
+
 Library file locations (from download)
 - Core:   `api/core/lib/<arch>`
     - fmod_vc.lib
@@ -80,6 +102,7 @@ Library file locations (from download)
 - Core:   `api/core/lib/upstream/w32`
     - fmod_wasm.a
     - fmodL_wasm.a
+    - fmod_reduced_wasm.a
 
 - Studio: `api/studio/lib/upstream/w32`
     - fmodstudio_wasm.a
@@ -88,10 +111,10 @@ Library file locations (from download)
 Destination folder (in this repo):
     `fmod/<version>/lib/html5-w32`
 
-*Platform note:*
-The easiest and most reliable way to set up Emscripten builds in CMake is by passing the toolchain file to the CMake command line. e.g. `cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=<path/to/Emscripten.cmake>`
-
-Assuming you've already installed emsdk and the latest version of Emscripten, this file is usually located at `<emsdk-root>/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake`
+*Platform notes:*
+- The easiest and most reliable way to set up Emscripten builds in CMake is by passing the toolchain file to the CMake command line. e.g. `cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=<path/to/Emscripten.cmake>`
+- Assuming you've already installed emsdk and the latest version of Emscripten, this file is usually located at `<emsdk-root>/upstream/emscripten/cmake/Modules/Platform/Emscripten.cmake`
+- In order to use the reduced fmod libs, you must set `FMOD_HTML5_REDUCED` to a truthy value in the CMakeLists file. When falsy, the fmodstudio logging library is linked to, even in non-debug builds, as the non-logging library contains the reduced fmod core version inside of it.
 
 ##### More platforms to come...
 
@@ -125,6 +148,6 @@ target_link_libraries(my_exe PRIVATE fmod)
 
 Please submit an issue for suggestions, requests or bug reports. Pull requests are welcome, especially for the following:
 
-- Support for other platforms (Linux, Mobile, Consoles, etc.)
+- Support for other platforms (Mobile, Consoles, etc.)
 - Added robustness to CMake files fixing bugs and covering edge cases, etc.
 - CMake compilation tests, library and header location checks, provide better error messages
