@@ -31,15 +31,18 @@ else()
             ${CMAKE_CURRENT_BINARY_DIR}/assets)
     endif()
 
-    # Fetch and link to SDL2
-    include(FetchContent)
+    find_library(SDL2 SDL2)
+    if (NOT SDL2)
+        # Fetch and link to SDL2
+        include(FetchContent)
 
-    FetchContent_Declare(SDL2
-        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG        fb1497566c5a05e2babdcf45ef0ab5c7cca2c4ae
-    )
+        FetchContent_Declare(SDL2
+            GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+            GIT_TAG        fb1497566c5a05e2babdcf45ef0ab5c7cca2c4ae
+        )
 
-    FetchContent_MakeAvailable(SDL2)
+        FetchContent_MakeAvailable(SDL2)
+    endif()
 
     target_link_libraries(fmod_cmake_test PRIVATE SDL2::SDL2 SDL2::SDL2main)
 endif()
