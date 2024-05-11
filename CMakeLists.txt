@@ -17,11 +17,6 @@ endif()
 add_subdirectory(fmod)
 
 # ===== Example project =====
-if (NOT DEFINED FMOD_CMAKE_EXAMPLE)
-    set (FMOD_CMAKE_EXAMPLE "${CMAKE_CURRENT_SOURCE_DIR}" STREQUAL "${CMAKE_SOURCE_DIR}" CACHE BOOL
-        "Auto add example executable if this is the root CMake directory" FORCE)
-endif()
-
-if (FMOD_CMAKE_EXAMPLE)
+if (FMOD_CMAKE_EXAMPLE OR CMAKE_SOURCE_DIR STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
     add_subdirectory(example)
 endif()
