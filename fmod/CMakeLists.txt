@@ -14,8 +14,9 @@ endif()
 
 # Find libraries
 fmod_find_libs(${FMOD_PLATFORM} ${FMOD_VERSION} FMOD_LIBS FMOD_STUDIO_LIBS FMOD_DLLS)
-set(FMOD_DLLS ${FMOD_DLLS} CACHE STRING "" FORCE) # cache this for use with `fmod_copy_dlls`
-
+set(FMOD_DLLS ${FMOD_DLLS} CACHE STRING "" FORCE) # cache these for use with `fmod_copy_libs`
+set(FMOD_LIBS ${FMOD_LIBS} CACHE STRING "" FORCE)
+set(FMOD_STUDIO_LIBS ${FMOD_LIBS} CACHE STRING "" FORCE)
 set(FMOD_INCLUDE_DIR ${FMOD_VERSION}/include)
 
 # Create the library interfaces

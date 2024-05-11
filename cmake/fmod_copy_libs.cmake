@@ -7,7 +7,7 @@ macro(fmod_copy_dlls)
             message(WARNING "fmod-cmake: A call to `fmod_copy_dlls` was made on a non-Windows platform")
         return()
     endif()
-    
+
     # Get the target to copy the dlls next to
     if (${ARGV0})
         set (TARGET ${ARGV0})
@@ -25,9 +25,9 @@ macro(fmod_copy_dlls)
             message(WARNING "Could not copy FMOD Core dll: Failed to find target directory for target: ${TARGET}.")
             return()
         endif()
-            
+
         execute_process(
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 ${FMOD_DLL}
                 ${TARGET_DIR}/${FMOD_DLL_FILENAME}
         )
@@ -35,7 +35,7 @@ macro(fmod_copy_dlls)
 
     # Copy FMOD Studio dll if user provided one
     if (EXISTS ${FMOD_STUDIO_DLL})
-        
+
         get_target_property(TARGET_DIR ${TARGET} BINARY_DIR)
 
         if (NOT EXISTS ${TARGET_DIR})
@@ -44,12 +44,62 @@ macro(fmod_copy_dlls)
         endif()
 
         get_filename_component(FMOD_STUDIO_DLL_FILENAME ${FMOD_STUDIO_DLL} NAME)
-            
+
         execute_process(
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different 
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
                 ${FMOD_DLL}
                 ${TARGET_DIR}/${FMOD_STUDIO_DLL_FILENAME}
         )
+    endif()
+
+endmacro()
+
+macro(fmod_copy_libs)
+    # Get the target to copy the dlls next to
+    if (${ARGV0})
+        set (TARGET ${ARGV0})
+    else()
+        set (TARGET ${PROJECT_NAME})
+    endif()
+
+    if (WIN32)
+        fmod_copy_dlls(${TARGET})
+    endif()
+
+    if (EXISTS ${FMOD_LIBS})
+        get_target_property(TARGET_DIR ${TARGET} BINARY_DIR)
+
+        if (NOT EXISTS ${TARGET_DIR})
+            message(WARNING "Could not copy FMOD Core dll: Failed to find target directory for target: ${TARGET}.")
+            return()
+        endif()
+
+        foreach(LIB ${FMOD_LIBS})
+            get_filename_component(LIB_NAME ${LIB} NAME)
+            execute_process(
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${LIB}
+                    ${TARGET_DIR}/${LIB_NAME}
+            )
+        endforeach()
+    endif()
+
+    if (EXISTS ${FMOD_STUDIO_LIBS})
+        get_target_property(TARGET_DIR ${TARGET} BINARY_DIR)
+
+        if (NOT EXISTS ${TARGET_DIR})
+            message(WARNING "Could not copy FMOD Core dll: Failed to find target directory for target: ${TARGET}.")
+            return()
+        endif()
+
+        foreach(LIB ${FMOD_STUDIO_LIBS})
+            get_filename_component(LIB_NAME ${LIB} NAME)
+            execute_process(
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                    ${LIB}
+                    ${TARGET_DIR}/${LIB_NAME}
+            )
+        endforeach()
     endif()
 
 endmacro()

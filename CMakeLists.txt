@@ -7,7 +7,7 @@ set(FMOD_CMAKE_ROOT ${CMAKE_CURRENT_SOURCE_DIR} CACHE STRING "" FORCE)
 set (CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_MODULE_PATH}")
 
 # Provide functions
-include(fmod_copy_dlls)
+include(fmod_copy_libs)
 
 # ===== FMOD =====
 if (NOT FMOD_VERSION)
@@ -25,4 +25,3 @@ endif()
 if (FMOD_CMAKE_EXAMPLE)
     add_subdirectory(example)
 endif()
-
