@@ -1,15 +1,9 @@
 # FMOD CMake
 
 A CMake interface for linking to FMOD Studio and Core APIs on multiple platforms for C/C++ projects.
+The way it works is by downloading the FMOD libs and headers from fmod.com and copying them into your project.
 
-Since FMOD is proprietary, distribution is limited to downloads directly from
-fmod.com. In compliance with their copyright, this project only defines a
-folder structure into which you can copy/move these files and does not contain the actual files themselves.
-
-If forking this repo, please make any uploads of the FMOD libs and headers private.
-In order to add library files and headers to git, you'll need to comment out or delete the corresponding ignore patterns in `.gitignore`
-
-This interface is tested and working on
+This interface has been tested and working on
 - MacOS arm64
 - Linux Ubuntu aarch64
 - Windows arm64
@@ -26,7 +20,7 @@ This interface is tested and working on
 
 *Note:* You will need an FMOD account to access the downloads page. If you are planning on using FMOD commercially, you will need to follow their licensing structure and terms.
 
-#### 3. Copy FMOD headers
+#### 3. Copy the FMOD headers
 
 Find the C/C++ header files in one of your download folders or installations, usually located at `<fmod-api-root>/api/core/inc` and `<fmod-api-root>/api/studio/inc` for both Core and Studio APIs, respectively.
 
@@ -35,7 +29,7 @@ For the path to copy the files, let's say your version of FMOD is `2.02.21` - th
 
 *Note:* by specifying version folders, switching between multiple versions is supported by changing the `FMOD_VERSION` cmake variable as seen in step 5.
 
-#### 4. Copy FMOD libraries for each platform
+#### 4. Copy the FMOD libraries for each platform
 
 ##### Mac OS AppleClang (x86_64, arm64)
 
@@ -151,3 +145,11 @@ Please submit an issue for suggestions, requests or bug reports. Pull requests a
 - Support for other platforms (Mobile, Consoles, etc.)
 - Added robustness to CMake files fixing bugs and covering edge cases, etc.
 - CMake compilation tests, library and header location checks, provide better error messages
+
+### FMOD Licensing Note
+
+Since FMOD is proprietary, distribution is limited to downloads directly from their website.
+
+Therefore, please refrain from committing any of the FMOD libs and headers into any public repository.
+
+Also, if using FMOD commercially, you will need to obtain a license from them.
